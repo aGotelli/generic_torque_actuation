@@ -75,7 +75,7 @@ public:
      * slider. then it scales it and sends it as the current target to
      * the motor.
      */
-    void loop();
+    virtual void loop();
 
     std::shared_ptr<bool> m_start_recording {
         std::make_shared<bool>(false) };
@@ -120,6 +120,54 @@ public:
 
 
     ActuationLaws m_actuation_law;
+
+
+protected:
+
+    virtual double getDesiredCurrent(const unsigned int t_motor_index,
+                                     const double &t_local_time)const;
+
+};
+
+
+
+
+struct PIDTorqueControl : public GenericTorqueControl {
+
+    PIDTorqueControl()=default;
+
+
+    PIDTorqueControl(std::vector<SafeMotor_ptr> motor_list,
+                     ActuationLaws t_actuation_law,
+                     std::shared_ptr<std::vector<double>> t_forces,
+                     const double t_Kp,
+                     const double t_Ki,
+                     const double t_Kd)
+        : GenericTorqueControl(motor_list,
+                               t_actuation_law),
+        m_forces(t_forces),
+        m_Kp(t_Kp),
+        m_Ki(t_Ki),
+        m_Kd(t_Kd)
+    {}
+
+
+    virtual double getDesiredCurrent(const unsigned int t_motor_index,
+                                     const double &t_local_time)const override;
+
+
+
+    std::shared_ptr<std::vector<double>> m_forces;
+
+    double m_dt { 0.001 };
+    mutable double m_integral { 0.0 };
+    mutable double m_previous_error { 0.0 };
+
+    double m_Kp { 0.0 };
+    double m_Ki { 0.0 };
+    double m_Kd { 0.0 };
+
+
 
 };
 

@@ -95,7 +95,7 @@ void GenericTorqueControl::loop()
                                  ->newest_element();
 
 
-            desired_current = m_actuation_law[i](local_time);
+            desired_current = getDesiredCurrent(i, local_time);
 
             motor_list_[i]->set_current_target(desired_current);
             motor_list_[i]->send_if_input_changed();
@@ -123,6 +123,15 @@ void GenericTorqueControl::loop()
         }  // endfor
     }      // endwhile
     time_logger.dump_measurements("/home/andrea/Desktop/blmc_drivers/demos/andrea/simple_torque_control_tendon_sinu/test");
+}
+
+
+double GenericTorqueControl::getDesiredCurrent(const unsigned int t_motor_index,
+                                               const double &t_local_time)const
+{
+    double desired_current = m_actuation_law[t_motor_index](t_local_time);
+
+    return desired_current;
 }
 
 
@@ -168,6 +177,40 @@ void GenericTorqueControl::stop_loop()
 //    rt_printf("dumped the trajectory");
 }
 
+
+
+double PIDTorqueControl::getDesiredCurrent(const unsigned int t_motor_index,
+                                           const double &t_local_time)const
+{
+    //  Here we compute the current using the real value and thus the PID
+    const double desired_tension = m_actuation_law[t_motor_index](t_local_time);
+
+    const double current_tension = m_forces->at(t_motor_index);
+
+    const double error = current_tension - desired_tension;
+
+    //  Proportional term
+    const double P = m_Kp*error;
+
+    //  Integral term
+    m_integral += error*m_dt;
+    const double I = m_Ki*m_integral;
+
+    // Derivative term
+    const double D = (error - m_previous_error) / m_dt;
+
+
+    const double actuation = P+I+D;
+
+    const double tension_to_current = 1.0;
+
+
+
+    const double desired_current = actuation * tension_to_current;
+
+
+    return desired_current;
+}
 
 
 }  // namespace generic_torque_actuation

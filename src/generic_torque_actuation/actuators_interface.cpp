@@ -8,31 +8,63 @@ ActuatorsInterface::ActuatorsInterface(ActuationLaws t_actuations_laws,
                                        std::shared_ptr<bool> t_start_recording)
     : m_actuations_laws( t_actuations_laws )
 {
-    controller.m_start_recording = t_start_recording;
+    controller =
+        std::make_shared<generic_torque_actuation::GenericTorqueControl>(m_motor_list, m_actuations_laws);
+
+
+
+    controller->m_start_recording = t_start_recording;
+    rt_printf("controllers are set up \n");
+
+}
+
+
+ActuatorsInterface::ActuatorsInterface(ActuationLaws t_actuations_laws,
+                                       std::shared_ptr<bool> t_start_recording,
+                                       std::shared_ptr<std::vector<double>> t_forces,
+                                       const double t_Kp,
+                                       const double t_Ki,
+                                       const double t_Kd)
+    : m_actuations_laws( t_actuations_laws )
+{
+    controller =
+        std::make_shared<generic_torque_actuation::PIDTorqueControl>(m_motor_list,
+                                                                     m_actuations_laws,
+                                                                     t_forces,
+                                                                     t_Kp,
+                                                                     t_Ki,
+                                                                     t_Kd);
+
+
+
+    controller->m_start_recording = t_start_recording;
     rt_printf("controllers are set up \n");
 
 }
 
 
 
+
+
+
 void ActuatorsInterface::getSamplesData(YAML::Node &t_actuator_node, Eigen::MatrixXd &t_actuator_data)
 {
 
-    controller.stop_loop_ = true;
-    t_actuator_data = Eigen::MatrixXd(5, controller.currents_[0].size());
+    controller->stop_loop_ = true;
+    t_actuator_data = Eigen::MatrixXd(5, controller->currents_[0].size());
 
-    for(unsigned int i=0; i<controller.currents_[0].size(); i++){
+    for(unsigned int i=0; i<controller->currents_[0].size(); i++){
 
-        const auto relative_time = std::chrono::duration<double, std::milli>(controller.m_time_stamps[0][i] - controller.m_start).count();
+        const auto relative_time = std::chrono::duration<double, std::milli>(controller->m_time_stamps[0][i] - controller->m_start).count();
         t_actuator_data(0, i) = relative_time;
 
-        t_actuator_data(1, i) = controller.currents_[0][i];
+        t_actuator_data(1, i) = controller->currents_[0][i];
 
-        t_actuator_data(2, i) = controller.control_buffer_[0][i];
+        t_actuator_data(2, i) = controller->control_buffer_[0][i];
 
-        t_actuator_data(3, i) = controller.encoders_[0][i];
+        t_actuator_data(3, i) = controller->encoders_[0][i];
 
-        t_actuator_data(4, i) = controller.velocities_[0][i];
+        t_actuator_data(4, i) = controller->velocities_[0][i];
     }
 }
 

@@ -18,6 +18,14 @@ public:
                        std::shared_ptr<bool> t_start_recording);
 
 
+    ActuatorsInterface(ActuationLaws t_actuations_laws,
+                       std::shared_ptr<bool> t_start_recording,
+                       std::shared_ptr<std::vector<double>> t_forces,
+                       const double t_Kp,
+                       const double t_Ki,
+                       const double t_Kd);
+
+
 
 
     void getSamplesData(YAML::Node &t_actuator_node, Eigen::MatrixXd &t_actuator_data);
@@ -54,7 +62,7 @@ public:
     };
 
 
-    generic_torque_actuation::GenericTorqueControl controller { generic_torque_actuation::GenericTorqueControl(m_motor_list, m_actuations_laws) };
+    std::shared_ptr<generic_torque_actuation::GenericTorqueControl> controller;
 };
 
 }   //  namespace generic_torque_actuation

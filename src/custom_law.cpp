@@ -78,7 +78,7 @@ int main(int, char **)
     ::generic_torque_actuation::ActuatorsInterface actuators_interface(actuations_laws,
                                                                        m_start_recording);
 
-    actuators_interface.controller.start_loop();
+    actuators_interface.controller->start_loop();
 
     rt_printf("loops have started \n");
 
@@ -88,7 +88,7 @@ int main(int, char **)
         real_time_tools::Timer::sleep_sec(0.01);
     }
 
-    actuators_interface.controller.stop_loop();
+    actuators_interface.controller->stop_loop();
 
     return 0;
 }
