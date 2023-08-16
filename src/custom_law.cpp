@@ -49,8 +49,8 @@ int main(int, char **)
 
 
     // sine torque params
-    double current_amplitude = 0.7;
-    double current_period = 2;
+    double current_amplitude = 1.5;
+    double current_period = 1.5;
     double current_pulsation = 2 * 3.1415 / current_period;
 
     // here is the control in current (Ampere)
