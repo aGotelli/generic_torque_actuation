@@ -15,15 +15,16 @@ class ActuatorsInterface
 {
 public:
     ActuatorsInterface(ActuationLaws t_actuations_laws,
-                       std::shared_ptr<bool> t_start_recording);
-
-
-    ActuatorsInterface(ActuationLaws t_actuations_laws,
                        std::shared_ptr<bool> t_start_recording,
-                       std::shared_ptr<std::vector<double>> t_forces,
-                       const double t_Kp,
-                       const double t_Ki,
-                       const double t_Kd);
+                       std::vector<int> t_premultipliers=std::vector<int>());
+
+
+//    ActuatorsInterface(ActuationLaws t_actuations_laws,
+//                       std::shared_ptr<bool> t_start_recording,
+//                       std::shared_ptr<std::vector<double>> t_forces,
+//                       const double t_Kp,
+//                       const double t_Ki,
+//                       const double t_Kd);
 
 
 
@@ -31,6 +32,7 @@ public:
     void getSamplesData(YAML::Node &t_actuator_node, Eigen::MatrixXd &t_actuator_data);
 
     ActuationLaws m_actuations_laws;
+
 
     unsigned int m_number_of_motors { static_cast<unsigned int>(m_actuations_laws.size()) };
 

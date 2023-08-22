@@ -34,4 +34,7 @@ install(DIRECTORY include/${PROJECT_NAME}
 
 
 add_executable(custom_law custom_law.cpp)
-target_link_libraries(custom_law ${PROJECT_NAME})
+target_link_libraries(custom_law
+    ${PROJECT_NAME}
+    utilities
+)

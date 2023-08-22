@@ -34,7 +34,8 @@ public:
      * @param motor_slider_pairs
      */
     GenericTorqueControl(std::vector<SafeMotor_ptr> motor_list,
-                         ActuationLaws t_actuation_law);
+                         ActuationLaws t_actuation_law,
+                         std::vector<int> t_premultipliers);
 
     /**
      * @brief Destroy the SineTorqueControl object
@@ -122,6 +123,9 @@ public:
     ActuationLaws m_actuation_law;
 
 
+    std::vector<int> m_premultipliers;
+
+
 protected:
 
     virtual double getDesiredCurrent(const unsigned int t_motor_index,
@@ -132,43 +136,47 @@ protected:
 
 
 
-struct PIDTorqueControl : public GenericTorqueControl {
+//struct PIDTorqueControl : public GenericTorqueControl {
 
-    PIDTorqueControl()=default;
-
-
-    PIDTorqueControl(std::vector<SafeMotor_ptr> motor_list,
-                     ActuationLaws t_actuation_law,
-                     std::shared_ptr<std::vector<double>> t_forces,
-                     const double t_Kp,
-                     const double t_Ki,
-                     const double t_Kd)
-        : GenericTorqueControl(motor_list,
-                               t_actuation_law),
-        m_forces(t_forces),
-        m_Kp(t_Kp),
-        m_Ki(t_Ki),
-        m_Kd(t_Kd)
-    {}
+//    PIDTorqueControl()=default;
 
 
-    virtual double getDesiredCurrent(const unsigned int t_motor_index,
-                                     const double &t_local_time)const override;
+//    PIDTorqueControl(std::vector<SafeMotor_ptr> motor_list,
+//                     ActuationLaws t_actuation_law,
+//                     std::shared_ptr<std::vector<double>> t_forces,
+//                     const double t_Kp,
+//                     const double t_Ki,
+//                     const double t_Kd)
+//        : GenericTorqueControl(motor_list,
+//                               t_actuation_law),
+//        m_forces(t_forces),
+//        m_Kp(t_Kp),
+//        m_Ki(t_Ki),
+//        m_Kd(t_Kd)
+//    {
+//        std::cout << "Initialised PID control with \nKp: " << m_Kp << "\nKi: " << m_Ki << "\nKd: " << m_Kd << "\n\n";
+//        std::cout.flush();
+//    }
 
 
-
-    std::shared_ptr<std::vector<double>> m_forces;
-
-    double m_dt { 0.001 };
-    mutable double m_integral { 0.0 };
-    mutable double m_previous_error { 0.0 };
-
-    double m_Kp { 0.0 };
-    double m_Ki { 0.0 };
-    double m_Kd { 0.0 };
+//    virtual double getDesiredCurrent(const unsigned int t_motor_index,
+//                                     const double &t_local_time)const override;
 
 
 
-};
+//    std::shared_ptr<std::vector<double>> m_forces;
+
+//    double m_dt { 0.001 };
+//    mutable double m_integral { 0.0 };
+//    mutable double m_previous_error { 0.0 };
+
+//    double m_Kp { 0.0 };
+//    double m_Ki { 0.0 };
+//    double m_Kd { 0.0 };
+
+
+
+
+//};
 
 }  // namespace generic_torque_actuation
