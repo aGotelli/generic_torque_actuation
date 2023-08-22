@@ -1,0 +1,10 @@
+data_storage:
+  number_of_samples: 24276
+  rows_per_actuator: 5
+  number_of_actuators: 2
+  data_order:
+    - relative_time
+    - actual_current
+    - desired_current
+    - encoder_angle
+    - encoder_velocity
