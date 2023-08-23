@@ -111,8 +111,8 @@ int main(int, char **)
         const double initial_time = 5;
 
         // sine torque params
-        const double current_amplitude = 2.0;
-        const double frequency = 1.0;
+        const double current_amplitude = 1.5;
+        const double frequency = 0.5;
         const double omega = 2 * M_PI * frequency;
 
         if(t_time <= initial_time /*||
@@ -140,7 +140,7 @@ int main(int, char **)
 
 
         // sine torque params
-        const double current_amplitude = 0.8;
+        const double current_amplitude = 1.5;
         const double frequency = 0.5;
         const double omega = 2 * M_PI * frequency;
 

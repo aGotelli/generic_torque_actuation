@@ -1,5 +1,5 @@
 data_storage:
-  number_of_samples: 179858
+  number_of_samples: 25179
   rows_per_actuator: 5
   number_of_actuators: 2
   data_order:
