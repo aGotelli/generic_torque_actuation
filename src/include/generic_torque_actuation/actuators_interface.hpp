@@ -40,12 +40,34 @@ public:
 
 
     // First of all one need to initialize the communication with the can bus.
-    std::shared_ptr<blmc_drivers::CanBus> m_can_bus { std::make_shared<blmc_drivers::CanBus>("can0") };
+    std::vector<std::shared_ptr<blmc_drivers::CanBus>> m_can_busses { [this]()->std::vector<std::shared_ptr<blmc_drivers::CanBus>>{
+
+        const unsigned int number_of_can_busses = ceil(static_cast<double>(m_number_of_motors) / 2.0f);
+
+        std::vector<std::shared_ptr<blmc_drivers::CanBus>> can_busses(number_of_can_busses);
+
+        for(unsigned int index=0;auto& can_bus : can_busses){
+            std::string name = "can" + std::to_string(index++);
+            can_bus = std::make_shared<blmc_drivers::CanBus>(name);
+        }
+
+        return can_busses;
+    }() };
 
     // Then we create a motor board object that will use the can bus in order
     // communicate between this application and the actual motor board.
     // Important: the blmc motors are alinged during this stage.
-    std::shared_ptr<blmc_drivers::CanBusMotorBoard> m_board { std::make_shared<blmc_drivers::CanBusMotorBoard>(m_can_bus) };
+    std::vector<std::shared_ptr<blmc_drivers::CanBusMotorBoard>> m_boards { [this]()->std::vector<std::shared_ptr<blmc_drivers::CanBusMotorBoard>>{
+        //
+        std::vector<std::shared_ptr<blmc_drivers::CanBusMotorBoard>> boards(m_can_busses.size());
+
+        for(unsigned int index=0; auto& board : boards)
+            board = std::make_shared<blmc_drivers::CanBusMotorBoard>(m_can_busses[index++]);
+
+
+        return boards;
+
+    }() };
 
 
 
@@ -56,7 +78,8 @@ public:
             std::vector<generic_torque_actuation::SafeMotor_ptr> motor_list;
 
             for(unsigned int i=0; i<m_number_of_motors; i++) {
-                auto motor = std::make_shared<blmc_drivers::SafeMotor>(m_board, i);
+                unsigned int index = floor(static_cast<double>(i)/2.0f);
+                auto motor = std::make_shared<blmc_drivers::SafeMotor>(m_boards[index], i);
 
                 motor_list.push_back(motor);
             }
