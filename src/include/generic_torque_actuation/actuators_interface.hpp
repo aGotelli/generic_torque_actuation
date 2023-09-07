@@ -39,6 +39,13 @@ public:
     unsigned int m_number_of_motors { static_cast<unsigned int>(m_actuations_laws.size()) };
 
 
+//    std::shared_ptr<blmc_drivers::CanBus> m_can_bus0 { std::make_shared<blmc_drivers::CanBus>("can0") };
+//    std::shared_ptr<blmc_drivers::CanBus> m_can_bus1 { std::make_shared<blmc_drivers::CanBus>("can1") };
+
+//    std::shared_ptr<blmc_drivers::CanBusMotorBoard> m_board_0 { std::make_shared<blmc_drivers::CanBusMotorBoard>(m_can_bus0) };
+//    std::shared_ptr<blmc_drivers::CanBusMotorBoard> m_board_1 { std::make_shared<blmc_drivers::CanBusMotorBoard>(m_can_bus1) };
+
+
     // First of all one need to initialize the communication with the can bus.
     std::vector<std::shared_ptr<blmc_drivers::CanBus>> m_can_busses { [this]()->std::vector<std::shared_ptr<blmc_drivers::CanBus>>{
 
@@ -75,14 +82,30 @@ public:
 
     std::vector<generic_torque_actuation::SafeMotor_ptr> m_motor_list {
         [this](){
+//            std::vector<generic_torque_actuation::SafeMotor_ptr> motor_list {
+//                std::make_shared<blmc_drivers::SafeMotor>(m_board_0, 0),
+//                std::make_shared<blmc_drivers::SafeMotor>(m_board_0, 1),
+//                std::make_shared<blmc_drivers::SafeMotor>(m_board_1, 0),
+//                std::make_shared<blmc_drivers::SafeMotor>(m_board_1, 1)
+//            };
+
             std::vector<generic_torque_actuation::SafeMotor_ptr> motor_list;
 
-            for(unsigned int i=0; i<m_number_of_motors; i++) {
-                unsigned int index = floor(static_cast<double>(i)/2.0f);
-                auto motor = std::make_shared<blmc_drivers::SafeMotor>(m_boards[index], i);
 
-                motor_list.push_back(motor);
+            for(const auto& board : m_boards){
+                for(unsigned int i=0; i<=1; i++){
+                    motor_list.push_back( std::make_shared<blmc_drivers::SafeMotor>(board, i) );
+                    if(motor_list.size() == m_number_of_motors)
+                        break;
+                }
             }
+
+//            for(unsigned int i=0; i<m_number_of_motors; i++) {
+//                unsigned int index = floor(static_cast<double>(i)/2.0f);
+//                auto motor = std::make_shared<blmc_drivers::SafeMotor>(m_boards[index], i);
+
+//                motor_list.push_back(motor);
+//            }
 
             return motor_list;
         }()

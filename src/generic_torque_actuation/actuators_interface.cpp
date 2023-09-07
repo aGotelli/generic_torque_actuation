@@ -10,15 +10,24 @@ ActuatorsInterface::ActuatorsInterface(ActuationLaws t_actuations_laws,
     : m_actuations_laws( t_actuations_laws )
 {
 
+//    std::cout << "Entering constructor brackets" << std::endl;
     if(t_premultipliers.empty())
         t_premultipliers = std::vector<int>(t_actuations_laws.size(), 1);
 
+
+//    std::cout << "Motor list size : " << m_motor_list.size() << std::endl;
+
+//    for(const auto &motor : m_motor_list)
+//        motor->print();
+//    std::cout.flush();
+
+//    std::cout << "Creating controller" << std::endl;
     controller =
         std::make_shared<generic_torque_actuation::GenericTorqueControl>(m_motor_list,
                                                                          m_actuations_laws,
-                                                                         t_premultipliers);
+                                                                        t_premultipliers);
 
-
+//    std::cout << "Controller created" << std::endl;
 
     controller->m_start_recording = t_start_recording;
     rt_printf("controllers are set up \n");
@@ -71,7 +80,7 @@ void ActuatorsInterface::getSamplesData(YAML::Node &t_actuator_node, Eigen::Matr
 
         for(unsigned int i=0; i<controller->currents_[0].size(); i++){
 
-            const auto relative_time = std::chrono::duration<double, std::milli>(controller->m_time_stamps[motor][i] - controller->m_start).count();
+            const auto relative_time = std::chrono::high_resolution_clock::duration(controller->m_time_stamps[motor][i] - controller->m_start).count()/1e9;
 
             t_actuator_data.block(start_row, i, rows_per_actuator, 1) <<    relative_time,
                                                                             controller->currents_[motor][i],
